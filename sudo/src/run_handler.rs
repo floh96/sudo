@@ -502,7 +502,7 @@ fn send_request_via_rpc(req: &ElevateRequest, nonce: u32) -> Result<i32> {
     if req.sudo_mode == SudoMode::ForceNewWindow {
         let translated_msg = r::IDS_LAUNCHEDNEWWINDOW.get();
         let replaced = translated_msg.replace("{0}", &req.application);
-        println!("{}", replaced);
+        println!("{replaced}");
         Ok(0)
     } else {
         unsafe {

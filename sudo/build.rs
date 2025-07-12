@@ -160,7 +160,7 @@ fn build_rpc() {
         "x86_64-pc-windows-msvc" => "x64",
         "i686-pc-windows-msvc" => "win32",
         "aarch64-pc-windows-msvc" => "arm64",
-        _ => panic!("Unknown target {}", target),
+        _ => panic!("Unknown target {target}"),
     });
 
     // I was pretty confident that we needed to pass /protocol ndr64 here, but
