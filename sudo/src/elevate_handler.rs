@@ -167,3 +167,15 @@ pub fn start_rpc_server(
 
     Ok(0)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_handle_to_stdio_invalid() {
+        let h = HANDLE::default();
+        let stdio = handle_to_stdio(h);
+        assert!(matches!(stdio.kind(), std::process::StdioKind::Inherit));
+    }
+}

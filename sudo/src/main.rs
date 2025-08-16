@@ -467,3 +467,28 @@ fn try_enable_sudo(requested_mode: SudoMode) -> Result<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_do_config_no_args() {
+        let app = sudo_cli(SudoMode::Normal.into());
+        let matches = app.get_matches_from(vec!["sudo", "config"]);
+        let res = do_config(matches.subcommand_matches("config").unwrap());
+        // This should fail because we're not running elevated.
+        // The error message is printed to stderr, so we can't check it here.
+        // But we can check the exit code.
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_do_config_enable() {
+        let app = sudo_cli(SudoMode::Normal.into());
+        let matches = app.get_matches_from(vec!["sudo", "config", "--enable", "normal"]);
+        let res = do_config(matches.subcommand_matches("config").unwrap());
+        // This should fail because we're not running elevated.
+        assert!(res.is_err());
+    }
+}
