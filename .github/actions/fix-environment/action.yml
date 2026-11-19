@@ -10,6 +10,11 @@ runs:
         $vs_root = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
           -latest -property installationPath -format value
 
+        $sdk_ver = (Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Directory `
+          | Where-Object { $_.Name -match '^10\.0\.\d+\.\d+$' } `
+          | Sort-Object { [version]$_.Name } -Descending `
+          | Select-Object -First 1).Name
+
         switch -Wildcard ("${{ matrix.target }}")
         {
           "*-pc-windows-gnu"
@@ -18,19 +23,19 @@ runs:
           }
           "i686*"
           {
-            "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22000.0\x86" >> $env:GITHUB_PATH
+            "${env:ProgramFiles(x86)}\Windows Kits\10\bin\$sdk_ver\x86" >> $env:GITHUB_PATH
             ((Resolve-Path "$vs_root\VC\Tools\MSVC\*\bin\Hostx86\x86")
               | Sort-Object -Descending | Select -First 1).ToString() >> $env:GITHUB_PATH
           }
           "x86_64*"
           {
-            "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22000.0\x64" >> $env:GITHUB_PATH
+            "${env:ProgramFiles(x86)}\Windows Kits\10\bin\$sdk_ver\x64" >> $env:GITHUB_PATH
             ((Resolve-Path "$vs_root\VC\Tools\MSVC\*\bin\Hostx64\x64")
               | Sort-Object -Descending | Select -First 1).ToString() >> $env:GITHUB_PATH
           }
           "aarch64*"
           {
-            "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22000.0\x64" >> $env:GITHUB_PATH
+            "${env:ProgramFiles(x86)}\Windows Kits\10\bin\$sdk_ver\x64" >> $env:GITHUB_PATH
             ((Resolve-Path "$vs_root\VC\Tools\MSVC\*\bin\Hostx64\x64")
               | Sort-Object -Descending | Select -First 1).ToString() >> $env:GITHUB_PATH
           }
@@ -38,7 +43,7 @@ runs:
           {
             (Join-Path $env:GITHUB_WORKSPACE "target\debug\deps").ToString() >> $env:GITHUB_PATH
             (Join-Path $env:GITHUB_WORKSPACE "target\test\debug\deps").ToString() >> $env:GITHUB_PATH
-            "INCLUDE=${env:ProgramFiles(x86)}\Windows Kits\10\include\10.0.22000.0\winrt;${env:ProgramFiles(x86)}\Windows Kits\10\include\10.0.22000.0\cppwinrt" `
+            "INCLUDE=${env:ProgramFiles(x86)}\Windows Kits\10\include\$sdk_ver\winrt;${env:ProgramFiles(x86)}\Windows Kits\10\include\$sdk_ver\cppwinrt" `
               >> $env:GITHUB_ENV
           }
         }
